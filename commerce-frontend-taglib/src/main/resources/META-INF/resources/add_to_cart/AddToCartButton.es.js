@@ -17,10 +17,17 @@ const selectInput = (element) => {
 	}
 };
 
+function doFocusOut() {
+	this.editMode = false;
+	this.element.parentElement.closest('[tabindex="0"]').focus();
+}
+
 class AddToCartButton extends Component {
 
 	created() {
 		this.initialQuantity = this.quantity;
+		this.oldQuantity = 0;
+		this.hasQuantityChanged = false;
 
 		window.Liferay.on('accountSelected', this._handleAccountChange, this);
 	}
@@ -51,6 +58,7 @@ class AddToCartButton extends Component {
 	_disableEditMode() {
 		this.editMode = false;
 		this.quantity = this.initialQuantity;
+		this.oldQuantity = this.initialQuantity;
 	}
 
 	_handleBtnClick(e) {
@@ -84,41 +92,36 @@ class AddToCartButton extends Component {
 	}
 
 	_handleSubmitClick() {
-		const formData = new FormData();
+		if (this.oldQuantity !== this.quantity) {
+			this.hasQuantityChanged = true;
+			const formData = new FormData();
 
-		formData.append('commerceAccountId', this.accountId);
-		formData.append('groupId', themeDisplay.getScopeGroupId());
-		formData.append('productId', this.productId);
-		formData.append('quantity', this.quantity);
-		formData.append('options', this.options);
+			formData.append('commerceAccountId', this.accountId);
+			formData.append('groupId', themeDisplay.getScopeGroupId());
+			formData.append('productId', this.productId);
+			formData.append('quantity', this.quantity);
+			formData.append('options', this.options);
 
-		if (this.orderId) {
-			formData.append('orderId', this.orderId);
-		}
+			if (this.orderId) {
+				formData.append('orderId', this.orderId);
+			}
 
-		fetch(
-			this.cartAPI,
-			{
+			fetch(this.cartAPI, {
 				body: formData,
 				method: 'POST'
-			}
-		)
-			.then(response => response.json())
-			.then(
-				(jsonresponse) => {
+			})
+				.then(response => response.json())
+				.then(jsonresponse => {
 					if (jsonresponse.success) {
 						Liferay.fire('updateCart', jsonresponse);
 
-						this.editMode = false;
 						this.initialQuantity = this.quantity;
-						this.element.parentElement.closest('[tabindex="0"]').focus();
+						this.oldQuantity = this.quantity;
 						this.emit('submitQuantity', this.productId, this.quantity);
-					}
-					else if (jsonresponse.errorMessages) {
+					} else if (jsonresponse.errorMessages) {
 						this._showNotification(jsonresponse.errorMessages[0], 'danger');
-					}
-					else {
-						var validatorErrors = jsonresponse.validatorErrors;
+					} else {
+						const validatorErrors = jsonresponse.validatorErrors;
 
 						if (validatorErrors) {
 							validatorErrors.forEach(
@@ -126,13 +129,16 @@ class AddToCartButton extends Component {
 									this._showNotification(validatorError.message, 'danger');
 								}
 							);
-						}
-						else {
+						} else {
 							this._showNotification(jsonresponse.error, 'danger');
 						}
 					}
-				}
-			);
+				}).catch(weShouldHandleErrors => {});
+		} else {
+			this.hasQuantityChanged = false;
+		}
+
+		doFocusOut.call(this);
 	}
 
 	_showNotification(message, type) {
@@ -184,6 +190,7 @@ AddToCartButton.STATE = {
 		]
 	).required(),
 	quantity: Config.number().value(0),
+	hasQuantityChanged: Config.bool().value(false),
 	settings: Config.shapeOf(
 		{
 			allowedQuantity: Config.array(Config.number()),

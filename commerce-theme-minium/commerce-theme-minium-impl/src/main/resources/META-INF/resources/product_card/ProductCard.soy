@@ -157,9 +157,10 @@
 						{param editMode: false /}
 						{param settings: $settings /}
 						{param productId: $skuId /}
+						{param spritemap: $spritemap /}
 					{/call}
 				{else}
-					<a class="commerce-button commerce-button--outline" href="{$detailsLink}">
+					<a class="commerce-button commerce-button--small commerce-button--outline" href="{$detailsLink}">
 						{msg desc="View all variants"}view-all-variants{/msg}
 					</a>
 				{/if}

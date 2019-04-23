@@ -1,84 +1,379 @@
+@mixin formElement() {
+	font-size: 1.5em !important;
+	background: transparent !important;
+	border-radius: 8px;
+	border: 0;
+}
+
+@mixin transformButton(
+	$top, $left,
+	$marginTop, $marginLeft,
+	$width, $height,
+	$border,
+	$background
+) {
+
+	top: $left;
+	left: $top;
+	margin-left: $marginLeft;
+	margin-top: $marginTop;
+	width: $width;
+	height: $height;
+	border: $border;
+	background: $background;
+}
+
+@mixin constantSteps() {
+	border-radius: 22px;
+	color: $color-mood-good;
+	font-size: 1.7em;
+	line-height: 38px;
+}
+
+$baseTransitions: all .1s ease;
+$inputOutline: rgba(76, 132, 255, 0.5);
+
+@keyframes toInput {
+	0% {
+		@include transformButton(
+			0, 0,
+			0, 0,
+			100%, 100%,
+			0,
+			$color-theme-dark
+		);
+	}
+
+	60% {
+		@include transformButton(
+			50%, 50%,
+			-22px, -30px,
+			50px, 44px,
+			3px solid $inputOutline,
+			rgba(255, 255, 255, 1)
+		);
+	}
+
+	100% {
+		@include transformButton(
+			50%, 50%,
+			-22px, -30px,
+			50px, 44px,
+			3px solid $inputOutline,
+			rgba(255, 255, 255, 0)
+		);
+	}
+}
+
+@keyframes toOk {
+	0% {
+		@include transformButton(
+										0, 0,
+										0, 0,
+										50px, 44px,
+										3px solid $color-mood-good,
+										rgba(255, 255, 255, 0)
+		);
+		border-radius: 8px;
+		line-height: 40px;
+	}
+
+	100% {
+		@include transformButton(
+										0, 0,
+										0, 0,
+										100%, 100%,
+										3px solid $color-mood-good,
+										$color-mood-good
+		);
+		border-radius: 8px;
+		line-height: 40px;
+	}
+}
+
+@keyframes toConfirm {
+	0% {
+		@include transformButton(
+			50%, 50%,
+			-22px, -30px,
+			50px, 44px,
+			3px solid $inputOutline,
+			rgba(255, 255, 255, 1)
+		);
+		transform: rotate(0);
+	}
+
+	21% {
+		@include constantSteps;
+		@include transformButton(
+			50%, 50%,
+			-22px, -26px,
+			44px, 44px,
+			3px solid $color-mood-good,
+			rgba(255, 255, 255, 1)
+		);
+		content: '';
+		transform: rotate(0deg)
+	}
+
+	22% {
+		@include constantSteps;
+		@include transformButton(
+			50%, 50%,
+			-22px, -26px,
+			44px, 44px,
+			3px solid $color-mood-good,
+			rgba(255, 255, 255, 1)
+		);
+		content: '';
+		transform: rotate(45deg)
+	}
+
+	25% {
+		@include constantSteps;
+		@include transformButton(
+			50%, 50%,
+			-22px, -26px,
+			44px, 44px,
+			3px solid $color-mood-good,
+			rgba(255, 255, 255, 1)
+		);
+		content: '˩';
+		transform: rotate(45deg)
+	}
+
+	70% {
+		@include constantSteps;
+		@include transformButton(
+			50%, 50%,
+			-22px, -26px,
+			44px, 44px,
+			3px solid $color-mood-good,
+			rgba(255, 255, 255, 1)
+		);
+		content: '˩';
+		transform: rotate(45deg)
+	}
+
+	71% {
+		@include constantSteps;
+		@include transformButton(
+			50%, 50%,
+			-22px, -26px,
+			44px, 44px,
+			3px solid $color-mood-good,
+			rgba(255, 255, 255, 1)
+		);
+		content: '';
+		transform: rotate(45deg)
+	}
+
+	72% {
+		@include constantSteps;
+		@include transformButton(
+			50%, 50%,
+			-22px, -26px,
+			44px, 44px,
+			3px solid $color-mood-good,
+			rgba(255, 255, 255, 1)
+		);
+		content: '';
+		transform: rotate(0)
+	}
+
+	100% {
+		@include transformButton(
+			0, 0,
+			0, 0,
+			100%, 100%,
+			0,
+			$color-mood-good
+		);
+		border-radius: 8px;
+	}
+}
+
+@keyframes quantityButtonsLeft {
+	from { opacity: 0; transform: translate3d(20px, 0, 0); }
+	to { opacity: 1; transform: translate3d(-10px, 0, 0); }
+}
+
+@keyframes quantityButtonsRight {
+	from { opacity: 0; transform: translate3d(-20px, 0, 0); }
+	to { opacity: 1; transform: translate3d(10px, 0, 0); }
+}
+
+@mixin quantityButtonsAnimation($translateX) {
+	@if($translateX == 'left') {
+		animation: quantityButtonsLeft .6s ease 1;
+	} @else {
+		animation: quantityButtonsRight .6s ease 1;
+	}
+}
+
+@keyframes confirmButton {
+	from { transform: translate3d(-20px, 1px, 0); opacity: 0; }
+	to { transform: translate3d(0, 1px, 0); opacity: 1; }
+}
+
 .add-to-cart-button {
-	min-width: 200px;
+
+	::selection {
+		background-color: $color-theme-light;
+	}
+
+	min-width: 140px;
 	position: relative;
-	transition: all ease 100ms;
+	border: 0 !important;
+	background-color: $color-theme !important;
+	transition: min-width .1s ease,
+				border .1s ease;
+
+	&:hover {
+		cursor: pointer !important;
+		min-width: 160px;
+		background-color: $color-theme-dark;
+		transition: $baseTransitions;
+	}
+
+	&::before {
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		border: 3px solid transparent;
+		box-sizing: border-box;
+		border-radius: 6px;
+		background: rgba(255, 255, 255, 0);
+		transition: all .2s .5s ease;
+	}
 
 	&--edit {
 		cursor: default !important;
-		min-width: 160px;
+		box-shadow: none !important;
+		background-color: inherit !important;
+		min-width: 100px;
+		color: black;
+
+		&::before {
+			@include transformButton(
+				50%, 50%,
+				-22px, -30px,
+				50px, 44px,
+				3px solid $inputOutline,
+				rgba(255, 255, 255, 1)
+			);
+			content: '';
+			display: block;
+			position: absolute;
+			border-radius: 8px;
+			animation: toInput .3s ease-in 1 forwards;
+		}
 	}
 
 	&__fwd {
+		opacity: 0;
 		align-items: center;
 		cursor: pointer;
 		display: flex;
 		height: 40px;
 		justify-content: center;
 		position: absolute;
-		right: 0;
-		transition: transform ease 50ms;
+		right: -35px;
 		width: 30px;
+		color: $color-theme;
+		font-size: 26px !important;
+		line-height: 20px;
+		animation: confirmButton 500ms ease 1 forwards;
+		animation-delay: 200ms;
 
-		&:hover {
-			transform: scale(1.5);
+		&:hover .arrow__line {
+			transform: scale3d(.9, 1, 1) translate3d(0, 0, 0);
+			transition: transform .2s ease-in;
 		}
 
-		&::before {
-			border: solid currentColor;
-			border-width: 0 2px 2px 0;
-			content: '';
-			display: inline-block;
-			height: 5px;
-			transform: rotate(-45deg);
-			width: 5px;
+		&:hover .arrow__tip {
+			transform-origin: left center;
+			transform: translate3d(-16px, 0px, 0);
+			transition: transform .2s ease-in;
+		}
+
+		& .arrow {
+			&__line {
+				transform-origin: left center;
+				transform: scaleX(.70);
+			}
+
+			&__tip {
+				transform: translateX(-23px);
+			}
+		}
+	}
+
+	&.commerce-button--good {
+		background-color: $color-mood-good !important;
+		padding: 0;
+		transition: all .1s ease;
+		transition-delay: 0ms;
+
+		&:hover {
+			.added-quantity {
+				height: inherit;
+				width: inherit;
+				display: none;
+			}
+		}
+
+		&:hover::before {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			content: 'edit quantity';
+		}
+
+		&.quantity-changed {
+			transition-delay: 900ms;
+		}
+
+		&.quantity-changed::before {
+			animation: toConfirm 1000ms ease 1;
 		}
 	}
 
 	&__ok {
-		align-items: center;
-		display: inline-flex;
-		height: 30px;
-		justify-content: center;
-		margin-left: 4px;
-		width: 8px;
-
-		&::before {
-			border: solid currentColor;
-			border-width: 0 2px 2px 0;
-			content: '';
-			display: inline-block;
-			height: 10px;
-			transform: rotate(45deg) translateY(-2px);
-			width: 7px;
-		}
 	}
 
 	.commerce-quantity-selector {
 		transform: translateX(-5px);
+		color: black;
 
 		&__input {
-			background: rgba(0, 0, 0, 0.2);
-			border: 0;
-			border-radius: 6px;
-			color: inherit;
+			@include formElement;
 			width: 40px;
+			height: 40px;
 		}
 
 		&__select {
-			background: rgba(0, 0, 0, 0.2);
-			border: 0;
-			border-radius: 6px;
-			color: inherit;
+			@include formElement;
 		}
 
 		&__btn {
-			color: inherit;
+			font-size: 2em;
 			height: 40px;
-			transition: transform ease 50ms;
-			width: 30px;
+			width: 40px;
 
-			&:hover {
-				transform: scale(1.5);
+			&:nth-child(1) {
+				transform: translate3d(-10px, 0, 0);
+				transform-origin: right center;
+				@include quantityButtonsAnimation('left');
+			}
+
+			&:nth-child(3) {
+				transform: translate3d(10px, 0, 0);
+				transform-origin: left center;
+				@include quantityButtonsAnimation('right');
 			}
 		}
 	}
