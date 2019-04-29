@@ -46,8 +46,8 @@
 			&::before {
 				@include transformButton(
 												50%, 50%,
-												-22px, -25px,
-												50px, 44px,
+												-22px, -35px,
+												70px, 44px,
 												3px solid $inputOutline,
 												rgba(255, 255, 255, 1)
 				);
@@ -56,6 +56,21 @@
 				position: absolute;
 				border-radius: 8px;
 				animation: toInput .3s ease-in 1 forwards;
+			}
+
+			&.with-select::before {
+				@include transformButton(
+												50%, 50%,
+												-22px, -35px,
+												70px, 44px,
+												3px solid $inputOutline,
+												rgba(255, 255, 255, 1)
+				);
+				content: '';
+				display: block;
+				position: absolute;
+				border-radius: 8px;
+				animation: toSelect .3s ease-in 1 forwards;
 			}
 		}
 
@@ -76,12 +91,12 @@
 			animation-delay: 200ms;
 
 			&:hover .arrow__line {
-				transform: scale3d(.9, 1, 1) translate3d(0, 0, 0);
+				transform-origin: left center;
+				transform: scale3d(1, 1, 1) translate3d(0, 0, 0);
 				transition: transform .2s ease-in;
 			}
 
 			&:hover .arrow__tip {
-				transform-origin: left center;
 				transform: translate3d(-16px, 0px, 0);
 				transition: transform .2s ease-in;
 			}
@@ -131,12 +146,14 @@
 		.commerce-quantity-selector {
 			&__input {
 				@include formElement;
-				width: 50px;
+				width: 65px;
 				height: 44px;
 			}
 
 			&__select {
 				@include formElement;
+				width: 65px;
+				height: 44px;
 			}
 
 			&__btn {
@@ -166,23 +183,44 @@
 			min-width: 160px;
 			height: 60px;
 			font-size: 12px;
+
+			&.commerce-button--good {
+				&:hover {
+					.added-quantity {
+						height: inherit;
+						width: inherit;
+						display: none;
+					}
+				}
+
+				&:hover::before {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					content: 'add more';
+				}
+			}
 		}
 
 		.commerce-quantity-selector {
 			margin-right: 10px;
 
 			&__input {
-				font-size: 12px;
+				font-size: 1.3em;
 				height: 60px;
 				width: 60px;
 			}
 
 			&__select {
-				font-size: 12px;
+				font-size: 1.3em;
+				height: 60px;
+				width: 80px;
+				border-radius: 8px;
+				margin-right: 10px;
 			}
 
 			&__btn {
-				font-size: 14px;
+				font-size: 2em;
 			}
 		}
 	}

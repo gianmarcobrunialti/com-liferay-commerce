@@ -149,14 +149,14 @@ class AddToCartButton extends Component {
 	}
 
 	_handleSubmitClick() {
-		if (this.oldQuantity !== this.quantity) {
-			this.hasQuantityChanged = true;
-
-			doSubmit.call(this);
-		} else if (this.inputQuantity > 0) {
+		if (isInline(this.element) && this.inputQuantity > 0) {
 			this.quantity += this.inputQuantity;
 			this.inputQuantity = this.settings.minQuantity;
 
+			this.hasQuantityChanged = true;
+
+			doSubmit.call(this);
+		} else if (this.oldQuantity !== this.quantity) {
 			this.hasQuantityChanged = true;
 
 			doSubmit.call(this);

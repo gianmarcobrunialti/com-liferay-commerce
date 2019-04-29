@@ -62,12 +62,11 @@
 	{@param? _handleBtnClick: any }
 	{@param? _handleBtnFocus: any }
 	{@param? _handleBtnFocusin: any }
-	{@param? _handleBtnFocusout: any }
 	{@param? _updateQuantity: any }
 	{@param? _submitQuantity: any }
 
 	{let $btnClass kind="text"}
-		commerce-button
+		commerce-button{sp}commerce-button--small
 		{if $quantity > 0 and $editMode == false}
 			{sp}commerce-button--good
 		{/if}
@@ -79,6 +78,10 @@
 		{sp}add-to-cart-button{sp}add-to-cart-button--compact
 		{if $editMode == true}
 			{sp}add-to-cart-button--compact--edit
+
+			{if isNonnull($settings.allowedQuantities)}
+				{sp}with-select
+			{/if}
 		{/if}
 
 		{if (isNonnull($accountId) and (isNonnull($disabled) and $disabled == false)) == false }
@@ -87,11 +90,10 @@
 	{/let}
 
 	<div
-			class="commerce-button--small {$btnClass}"
+			class="{$btnClass}"
 			data-onclick="{$_handleBtnClick}"
 			data-onfocus="{$_handleBtnFocus}"
 			data-onfocusin="{$_handleBtnFocusin}"
-			data-onfocusout="{$_handleBtnFocusout}"
 			tabindex="0"
 	>
 

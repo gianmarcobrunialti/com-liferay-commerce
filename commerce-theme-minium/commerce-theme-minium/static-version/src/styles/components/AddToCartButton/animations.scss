@@ -32,29 +32,35 @@
   }
 }
 
-@keyframes toOk {
+@keyframes toSelect {
   0% {
     @include transformButton(
                     0, 0,
                     0, 0,
-                    50px, 44px,
-                    3px solid $color-mood-good,
-                    rgba(255, 255, 255, 0)
+                    100%, 100%,
+                    0,
+                    $color-theme-dark
     );
-    border-radius: 8px;
-    line-height: 40px;
+  }
+
+  60% {
+    @include transformButton(
+                    50%, 50%,
+                    -22px, -35px,
+                    70px, 44px,
+                    3px solid $inputOutline,
+                    rgba(255, 255, 255, 1)
+    );
   }
 
   100% {
     @include transformButton(
-                    0, 0,
-                    0, 0,
-                    100%, 100%,
-                    3px solid $color-mood-good,
-                    $color-mood-good
+                    50%, 50%,
+                    -22px, -35px,
+                    70px, 44px,
+                    3px solid $inputOutline,
+                    rgba(255, 255, 255, 0)
     );
-    border-radius: 8px;
-    line-height: 40px;
   }
 }
 

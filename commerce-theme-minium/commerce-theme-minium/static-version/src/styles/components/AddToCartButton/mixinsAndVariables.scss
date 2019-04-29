@@ -6,6 +6,8 @@ $inputOutline: rgba(76, 132, 255, 0.5);
   background: transparent !important;
   border-radius: 8px;
   border: 0;
+  position: relative;
+  z-index: 1;
 }
 
 @mixin transformButton(
