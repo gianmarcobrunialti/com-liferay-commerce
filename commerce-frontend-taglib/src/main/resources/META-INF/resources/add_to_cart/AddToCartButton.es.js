@@ -18,8 +18,60 @@ const selectInput = (element) => {
 };
 
 function doFocusOut() {
+	const parentElement = this.element.parentElement.closest('[tabindex="0"]');
+
+	!!parentElement && parentElement.focus();
 	this.editMode = false;
-	this.element.parentElement.closest('[tabindex="0"]').focus();
+}
+
+function isInline(buttonVariant) {
+	return buttonVariant.className.includes('--inline');
+}
+
+function doSubmit() {
+	const formData = new FormData();
+
+	formData.append('commerceAccountId', this.accountId);
+	formData.append('groupId', themeDisplay.getScopeGroupId());
+	formData.append('productId', this.productId);
+	formData.append('quantity', this.quantity);
+	formData.append('options', this.options);
+
+	if (this.orderId) {
+		formData.append('orderId', this.orderId);
+	}
+
+	fetch(this.cartAPI, {
+		body: formData,
+		method: 'POST'
+	})
+	.then(response => response.json())
+	.then(jsonresponse => {
+		if (jsonresponse.success) {
+			Liferay.fire('updateCart', jsonresponse);
+
+			this.initialQuantity = this.quantity;
+			this.oldQuantity = this.quantity;
+			this.emit('submitQuantity', this.productId, this.quantity);
+		} else if (jsonresponse.errorMessages) {
+			this._showNotification(jsonresponse.errorMessages[0], 'danger');
+		} else {
+			const validatorErrors = jsonresponse.validatorErrors;
+
+			if (validatorErrors) {
+				validatorErrors.forEach(
+					validatorError => {
+						this._showNotification(validatorError.message, 'danger');
+					}
+				);
+			} else {
+				this._showNotification(jsonresponse.error, 'danger');
+			}
+		}
+	})
+	.catch(weShouldHandleErrors => {
+		console.warn('Fetch error', weShouldHandleErrors);
+	});
 }
 
 class AddToCartButton extends Component {
@@ -28,6 +80,7 @@ class AddToCartButton extends Component {
 		this.initialQuantity = this.quantity;
 		this.oldQuantity = 0;
 		this.hasQuantityChanged = false;
+		this.inputQuantity = this.settings.minQuantity;
 
 		window.Liferay.on('accountSelected', this._handleAccountChange, this);
 	}
@@ -43,7 +96,11 @@ class AddToCartButton extends Component {
 	}
 
 	_updateQuantity(quantity) {
-		this.quantity = quantity;
+		if (isInline(this.element)) {
+			this.inputQuantity = quantity;
+		} else {
+			this.quantity = quantity;
+		}
 	}
 
 	_submitQuantity(quantity) {
@@ -94,46 +151,15 @@ class AddToCartButton extends Component {
 	_handleSubmitClick() {
 		if (this.oldQuantity !== this.quantity) {
 			this.hasQuantityChanged = true;
-			const formData = new FormData();
 
-			formData.append('commerceAccountId', this.accountId);
-			formData.append('groupId', themeDisplay.getScopeGroupId());
-			formData.append('productId', this.productId);
-			formData.append('quantity', this.quantity);
-			formData.append('options', this.options);
+			doSubmit.call(this);
+		} else if (this.inputQuantity > 0) {
+			this.quantity += this.inputQuantity;
+			this.inputQuantity = this.settings.minQuantity;
 
-			if (this.orderId) {
-				formData.append('orderId', this.orderId);
-			}
+			this.hasQuantityChanged = true;
 
-			fetch(this.cartAPI, {
-				body: formData,
-				method: 'POST'
-			})
-				.then(response => response.json())
-				.then(jsonresponse => {
-					if (jsonresponse.success) {
-						Liferay.fire('updateCart', jsonresponse);
-
-						this.initialQuantity = this.quantity;
-						this.oldQuantity = this.quantity;
-						this.emit('submitQuantity', this.productId, this.quantity);
-					} else if (jsonresponse.errorMessages) {
-						this._showNotification(jsonresponse.errorMessages[0], 'danger');
-					} else {
-						const validatorErrors = jsonresponse.validatorErrors;
-
-						if (validatorErrors) {
-							validatorErrors.forEach(
-								validatorError => {
-									this._showNotification(validatorError.message, 'danger');
-								}
-							);
-						} else {
-							this._showNotification(jsonresponse.error, 'danger');
-						}
-					}
-				}).catch(weShouldHandleErrors => {});
+			doSubmit.call(this);
 		} else {
 			this.hasQuantityChanged = false;
 		}
@@ -190,6 +216,10 @@ AddToCartButton.STATE = {
 		]
 	).required(),
 	quantity: Config.number().value(0),
+	inputQuantity: Config.number(),
+	buttonVariant: Config.oneOf([
+		'compact'
+	]),
 	hasQuantityChanged: Config.bool().value(false),
 	settings: Config.shapeOf(
 		{
