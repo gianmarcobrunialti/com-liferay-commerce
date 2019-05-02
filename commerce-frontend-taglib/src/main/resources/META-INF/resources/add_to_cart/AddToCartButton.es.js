@@ -45,33 +45,37 @@ function doSubmit() {
 		body: formData,
 		method: 'POST'
 	})
-	.then(response => response.json())
-	.then(jsonresponse => {
-		if (jsonresponse.success) {
-			Liferay.fire('updateCart', jsonresponse);
+		.then(
+			response => response.json()
+		)
+		.then(
+			jsonresponse => {
+				if (jsonresponse.success) {
+					Liferay.fire('updateCart', jsonresponse);
 
-			this.initialQuantity = this.quantity;
-			this.oldQuantity = this.quantity;
-			this.emit('submitQuantity', this.productId, this.quantity);
-		} else if (jsonresponse.errorMessages) {
-			this._showNotification(jsonresponse.errorMessages[0], 'danger');
-		} else {
-			const validatorErrors = jsonresponse.validatorErrors;
+					this.initialQuantity = this.quantity;
+					this.oldQuantity = this.quantity;
+					this.emit('submitQuantity', this.productId, this.quantity);
+				}
+ else if (jsonresponse.errorMessages) {
+					this._showNotification(jsonresponse.errorMessages[0], 'danger');
+				}
+ else {
+					const validatorErrors = jsonresponse.validatorErrors;
 
-			if (validatorErrors) {
-				validatorErrors.forEach(
-					validatorError => {
-						this._showNotification(validatorError.message, 'danger');
+					if (validatorErrors) {
+						validatorErrors.forEach(
+							validatorError => {
+								this._showNotification(validatorError.message, 'danger');
+							}
+						);
 					}
-				);
-			} else {
-				this._showNotification(jsonresponse.error, 'danger');
-			}
-		}
-	})
-	.catch(weShouldHandleErrors => {
-		console.warn('Fetch error', weShouldHandleErrors);
-	});
+ else {
+						this._showNotification(jsonresponse.error, 'danger');
+					}
+				}
+			})
+		.catch(weShouldHandleErrors => {});
 }
 
 class AddToCartButton extends Component {
@@ -98,7 +102,8 @@ class AddToCartButton extends Component {
 	_updateQuantity(quantity) {
 		if (isInline(this.element)) {
 			this.inputQuantity = quantity;
-		} else {
+		}
+		else {
 			this.quantity = quantity;
 		}
 	}
@@ -156,11 +161,13 @@ class AddToCartButton extends Component {
 			this.hasQuantityChanged = true;
 
 			doSubmit.call(this);
-		} else if (this.oldQuantity !== this.quantity) {
+		}
+		else if (this.oldQuantity !== this.quantity) {
 			this.hasQuantityChanged = true;
 
 			doSubmit.call(this);
-		} else {
+		}
+		else {
 			this.hasQuantityChanged = false;
 		}
 
@@ -199,9 +206,14 @@ AddToCartButton.STATE = {
 			Config.string()
 		]
 	),
+	buttonVariant: Config.oneOf([
+		'compact'
+	]),
 	cartAPI: Config.string().required(),
 	disabled: Config.bool().value(false),
 	editMode: Config.bool().value(false),
+	hasQuantityChanged: Config.bool().value(false),
+	inputQuantity: Config.number(),
 	options: Config.string().value('[]'),
 	orderId: Config.oneOfType(
 		[
@@ -216,11 +228,6 @@ AddToCartButton.STATE = {
 		]
 	).required(),
 	quantity: Config.number().value(0),
-	inputQuantity: Config.number(),
-	buttonVariant: Config.oneOf([
-		'compact'
-	]),
-	hasQuantityChanged: Config.bool().value(false),
 	settings: Config.shapeOf(
 		{
 			allowedQuantity: Config.array(Config.number()),

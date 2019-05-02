@@ -94,6 +94,7 @@
 			data-onclick="{$_handleBtnClick}"
 			data-onfocus="{$_handleBtnFocus}"
 			data-onfocusin="{$_handleBtnFocusin}"
+			data-onfocusout="{$_handleBtnFocusout}"
 			tabindex="0"
 	>
 
@@ -126,7 +127,7 @@
 			{/call}
 
 			<div class="add-to-cart-button--compact__fwd"
-				 data-onclick="{$_handleSubmitClick}">
+				data-onclick="{$_handleSubmitClick}">
 
 				<span class="arrow__line">
 					{call ClayIcon.render}
@@ -195,11 +196,11 @@
 		{/call}
 
 		<div class="{$btnClass}"
-			 tabindex="0"
-			 data-onclick="{$_handleSubmitClick}"
-			 data-onfocus="{$_handleBtnFocus}"
-			 data-onfocusin="{$_handleBtnFocusin}"
-			 data-onfocusout="{$_handleBtnFocusout}"
+			tabindex="0"
+			data-onclick="{$_handleSubmitClick}"
+			data-onfocus="{$_handleBtnFocus}"
+			data-onfocusin="{$_handleBtnFocusin}"
+			data-onfocusout="{$_handleBtnFocusout}"
 		>
 			{if $hasQuantityChanged == false }
 				{msg desc="Add to cart"}add-to-cart{/msg}
