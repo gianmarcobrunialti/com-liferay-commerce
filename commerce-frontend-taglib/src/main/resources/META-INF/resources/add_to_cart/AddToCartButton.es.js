@@ -34,6 +34,7 @@ function doSubmit() {
 	formData.append('commerceAccountId', this.accountId);
 	formData.append('groupId', themeDisplay.getScopeGroupId());
 	formData.append('productId', this.productId);
+  formData.append('languageId', themeDisplay.getLanguageId());
 	formData.append('quantity', this.quantity);
 	formData.append('options', this.options);
 
@@ -158,6 +159,7 @@ class AddToCartButton extends Component {
 			doSubmit.call(this);
 		} else if (this.oldQuantity !== this.quantity) {
 			this.hasQuantityChanged = true;
+
 
 			doSubmit.call(this);
 		} else {
